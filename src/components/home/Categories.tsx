@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 const defaultCategories = [
     {
@@ -33,41 +33,32 @@ const defaultCategories = [
     }
 ]
 
-interface Category {
-    id: string
-    name: string
-    image: string
-    link: string
-}
-
 export function Categories() {
-    const [categories, setCategories] = useState<Category[]>(defaultCategories)
-
-    const fetchCategories = async () => {
-        try {
-            const supabase = createClient()
-            const { data } = await supabase
-                .from('collections')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true })
-
-            if (data && data.length > 0) {
-                setCategories(data.map((item: any) => ({
-                    id: item.id,
-                    name: item.name,
-                    image: item.image_url,
-                    link: item.link
-                })))
-            }
-        } catch (error) {
-            // Error fetching categories, using defaults
-        }
-    }
+    const { collections, fetchCollections, subscribeToCollections, loading } = useCollectionsStore()
 
     useEffect(() => {
-        fetchCategories()
-    }, [])
+        fetchCollections()
+        const unsubscribe = subscribeToCollections()
+        return () => unsubscribe()
+    }, [fetchCollections, subscribeToCollections])
+
+    // Determine which categories to display
+    const displayCategories = collections.length > 0 
+        ? collections.map(c => ({
+            id: c.id,
+            name: c.name,
+            image: c.image_url,
+            link: c.link
+        }))
+        : (loading ? [] : defaultCategories)
+
+    if (loading && collections.length === 0) {
+        return (
+            <div className="py-20 bg-background flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+            </div>
+        )
+    }
 
     const container = {
         hidden: { opacity: 0 },
@@ -106,7 +97,7 @@ export function Categories() {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
                 >
-                    {categories.map((category) => (
+                    {displayCategories.map((category) => (
                         <motion.div key={category.id} variants={item}>
                             <Link
                                 href={category.link}

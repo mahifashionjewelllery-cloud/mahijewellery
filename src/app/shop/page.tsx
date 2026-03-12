@@ -27,16 +27,17 @@ function ProductSkeleton() {
     )
 }
 
+import { useProductsStore } from '@/store/productsStore'
+
 function ShopContent() {
     const searchParams = useSearchParams()
     const initialMetal = searchParams.get('metal') || 'all'
-    const searchQuery = searchParams.get('search') || ''
+    const searchQueryInput = searchParams.get('search') || ''
 
     const [filter, setFilter] = useState(initialMetal)
     const [purityFilter, setPurityFilter] = useState<string[]>([])
     
-    const [products, setProducts] = useState<Product[]>([])
-    const [loading, setLoading] = useState(true)
+    const { products, loadingProducts, fetchProducts, subscribeToProducts } = useProductsStore()
     const [loadingMore, setLoadingMore] = useState(false)
     const [page, setPage] = useState(0)
     const [hasMore, setHasMore] = useState(true)
@@ -45,66 +46,41 @@ function ShopContent() {
     const ITEMS_PER_PAGE = 8
 
     useEffect(() => {
+        const unsubscribe = subscribeToProducts()
+        return () => unsubscribe()
+    }, [subscribeToProducts])
+
+    useEffect(() => {
         // Reset and fetch when filters change
-        setProducts([])
         setPage(0)
-        setHasMore(true)
-        fetchProducts(0, true)
-    }, [filter, searchQuery, purityFilter])
-
-    const fetchProducts = async (pageIndex: number, isInitial = false) => {
-        try {
-            if (isInitial) setLoading(true)
-            else setLoadingMore(true)
-            
-            const supabase = createClient()
-            let query = supabase
-                .from('products')
-                .select(`*, product_images(image_url)`)
-
-            if (filter !== 'all') {
-                query = query.eq('metal_type', filter)
-            }
-
-            if (purityFilter.length > 0) {
-                query = query.in('purity', purityFilter)
-            }
-
-            if (searchQuery) {
-                query = query.ilike('name', `%${searchQuery}%`)
-            }
-
-            const from = pageIndex * ITEMS_PER_PAGE
-            const to = from + ITEMS_PER_PAGE - 1
-
-            const { data, error } = await query.range(from, to)
-
-            if (error) throw error
-
-            const productsWithImages = data?.map(product => ({
-                ...product,
-                images: product.product_images?.map((img: any) => img.image_url) || []
-            })) || []
-
-            if (isInitial) {
-                setProducts(productsWithImages)
-            } else {
-                setProducts(prev => [...prev, ...productsWithImages])
-            }
-
-            setHasMore(productsWithImages.length === ITEMS_PER_PAGE)
-        } catch (error) {
-            console.error('Error fetching products:', error)
-        } finally {
-            setLoading(false)
-            setLoadingMore(false)
+        const loadInitial = async () => {
+            const more = await fetchProducts({
+                filter,
+                searchQuery: searchQueryInput,
+                purityFilter,
+                pageIndex: 0,
+                itemsPerPage: ITEMS_PER_PAGE,
+                isInitial: true
+            })
+            setHasMore(more)
         }
-    }
+        loadInitial()
+    }, [filter, searchQueryInput, purityFilter, fetchProducts])
 
-    const handleLoadMore = () => {
+    const handleLoadMore = async () => {
+        setLoadingMore(true)
         const nextPage = page + 1
         setPage(nextPage)
-        fetchProducts(nextPage)
+        const more = await fetchProducts({
+            filter,
+            searchQuery: searchQueryInput,
+            purityFilter,
+            pageIndex: nextPage,
+            itemsPerPage: ITEMS_PER_PAGE,
+            isInitial: false
+        })
+        setHasMore(more)
+        setLoadingMore(false)
     }
 
     const availablePurities = filter === 'gold' ? ['18K', '22K', '24K'] : filter === 'silver' ? ['92.5', 'pure'] : ['18K', '22K', '24K', '92.5', 'pure']
@@ -123,8 +99,8 @@ function ShopContent() {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6 border-b border-emerald-900/10 pb-10">
                     <div className="text-center md:text-left">
                         <h1 className="font-serif text-5xl lg:text-6xl text-emerald-50 tracking-tight">Our Curated Collection</h1>
-                        {searchQuery ? (
-                            <p className="text-emerald-100/80 font-light italic mt-3">Refining elegance for "{searchQuery}"</p>
+                        {searchQueryInput ? (
+                            <p className="text-emerald-100/80 font-light italic mt-3">Refining elegance for "{searchQueryInput}"</p>
                         ) : (
                             <p className="text-accent/80 font-medium uppercase tracking-[0.2em] text-xs mt-3">Timeless craftsmanship, delivered to you</p>
                         )}
@@ -195,7 +171,7 @@ function ShopContent() {
 
                     {/* Product Grid */}
                     <div className="lg:w-3/4 flex-grow">
-                        {loading && products.length === 0 ? (
+                        {loadingProducts && products.length === 0 ? (
                             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
                                 {[1, 2, 3, 4, 5, 6].map(i => <ProductSkeleton key={i} />)}
                             </div>

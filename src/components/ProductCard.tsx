@@ -141,7 +141,7 @@ export function ProductCard({ product, showRemoveFromWishlist }: ProductCardProp
                 </Link>
 
                 <div className="flex items-center gap-2 mb-4">
-                    <span className="text-xl font-bold text-[#ff4d4d]">
+                    <span className="text-xl font-bold text-accent">
                         {formatCurrency(priceDetails.total)}
                     </span>
                     <span className="text-sm text-gray-400 line-through">
@@ -154,7 +154,7 @@ export function ProductCard({ product, showRemoveFromWishlist }: ProductCardProp
                         onClick={handleAddToCart}
                         disabled={isAdding}
                         className={cn(
-                            "flex-grow bg-[#ff4d4d] hover:bg-[#ff3333] text-white text-sm font-semibold h-11 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-sm hover:shadow-md",
+                            "flex-grow bg-gradient-to-r from-[#d4af37] via-[#f3e5ab] to-[#d4af37] text-[#001a14] text-sm font-bold h-11 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(212,175,55,0.2)] hover:shadow-[0_6px_20px_rgba(212,175,55,0.3)] hover:brightness-105",
                             isAdding && "opacity-80 scale-[0.98]"
                         )}
                     >

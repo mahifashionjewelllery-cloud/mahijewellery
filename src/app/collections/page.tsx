@@ -7,32 +7,16 @@ import { createClient } from '@/lib/supabase'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 
-interface Collection {
-    id: string
-    name: string
-    image_url: string
-    link: string
-    display_order: number
-}
+import { useCollectionsStore } from '@/store/collectionsStore'
 
 export default function CollectionsPage() {
-    const [collections, setCollections] = useState<Collection[]>([])
-    const [loading, setLoading] = useState(true)
+    const { collections, fetchCollections, subscribeToCollections, loading } = useCollectionsStore()
 
     useEffect(() => {
-        const fetchCollections = async () => {
-            const supabase = createClient()
-            const { data } = await supabase
-                .from('collections')
-                .select('*')
-                .eq('is_active', true)
-                .order('display_order', { ascending: true })
-
-            if (data) setCollections(data)
-            setLoading(false)
-        }
         fetchCollections()
-    }, [])
+        const unsubscribe = subscribeToCollections()
+        return () => unsubscribe()
+    }, [fetchCollections, subscribeToCollections])
 
     if (loading) {
         return (

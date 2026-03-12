@@ -81,10 +81,20 @@ export interface SiteSettings {
     about_text: string;
     logo_url?: string;
     announcement_bar?: string;
+    gallery_images?: string[];
 }
 
 export interface RawSiteSetting {
     key: string;
     value: any;
     updated_at: string;
+}
+export interface Collection {
+    id: string;
+    name: string;
+    image_url: string;
+    link: string;
+    display_order: number;
+    is_active: boolean;
+    created_at: string;
 }

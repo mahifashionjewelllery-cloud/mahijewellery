@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { ShoppingBag, User, Menu, X, Search, LogOut, Heart, Home, Store, LayoutGrid, ImageIcon, Info } from 'lucide-react'
+import { ShoppingBag, User, Menu, X, Search, LogOut, Heart, Home, Store, LayoutGrid, ImageIcon, Info, ChevronRight } from 'lucide-react'
 import { useCartStore } from '@/store/cartStore'
 import { useWishlistStore } from '@/store/wishlistStore'
 import { cn } from '@/lib/utils'
@@ -240,33 +240,33 @@ export function Navbar() {
                     <div className="lg:hidden flex items-center gap-1 sm:gap-2">
                         <button
                             onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
-                            className="text-foreground/80 hover:text-accent transition-colors p-2"
+                            className="text-foreground/80 hover:text-accent transition-colors p-1.5"
                             aria-label="Search"
                         >
-                            {isMobileSearchOpen ? <X className="h-5 w-5" /> : <Search className="h-5 w-5" />}
+                            {isMobileSearchOpen ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
                         </button>
-                        <Link href="/wishlist" className="text-foreground/80 hover:text-accent transition-colors p-2 relative">
-                            <Heart className="h-5 w-5" />
+                        <Link href="/wishlist" className="text-foreground/80 hover:text-accent transition-colors p-1.5 relative">
+                            <Heart className="h-4 w-4" />
                             {totalWishlistItems > 0 && (
-                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-background bg-accent rounded-full">
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-[8px] font-bold leading-none text-background bg-accent rounded-full">
                                     {totalWishlistItems}
                                 </span>
                             )}
                         </Link>
-                        <Link href="/cart" className="text-foreground/80 hover:text-accent transition-colors p-2 relative">
-                            <ShoppingBag className="h-5 w-5" />
+                        <Link href="/cart" className="text-foreground/80 hover:text-accent transition-colors p-1.5 relative">
+                            <ShoppingBag className="h-4 w-4" />
                             {totalItems > 0 && (
-                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-background bg-accent rounded-full">
+                                <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1 py-0.5 text-[8px] font-bold leading-none text-background bg-accent rounded-full">
                                     {totalItems}
                                 </span>
                             )}
                         </Link>
                         <button
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
-                            className="inline-flex items-center justify-center p-2 rounded-md text-foreground hover:text-accent focus:outline-none"
+                            className="inline-flex items-center justify-center p-1.5 rounded-md text-foreground hover:text-accent focus:outline-none"
                             aria-label="Toggle mobile menu"
                         >
-                            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                         </button>
                     </div>
                 </div>
@@ -280,27 +280,20 @@ export function Navbar() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black/80 z-[55] lg:hidden"
+                            className="fixed inset-0 bg-black/80 z-[55] lg:hidden will-change-opacity"
                             onClick={() => setIsMenuOpen(false)}
                         />
                         <motion.div
                             key="mobile-menu"
-                            initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                            transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="fixed top-20 left-4 right-4 max-h-[60vh] bg-[#001a14]/95 backdrop-blur-xl border border-white/10 shadow-2xl z-[60] lg:hidden flex flex-col rounded-2xl overflow-hidden"
+                            initial={{ opacity: 0, scale: 0.95, y: -5 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -5 }}
+                            transition={{ duration: 0.15, ease: "easeOut" }}
+                            style={{ originX: 1, originY: 0 }}
+                            className="fixed top-20 right-4 w-48 bg-[#001a14]/98 backdrop-blur-md border border-accent/20 shadow-2xl z-[60] lg:hidden flex flex-col rounded-xl overflow-hidden will-change-[transform,opacity]"
                         >
-                            <div className="p-4 flex justify-between items-center border-b border-white/10 bg-white/5">
-                                <span className="font-serif text-base text-accent tracking-widest uppercase font-bold text-glow">
-                                    {user ? `Hi, ${userName || user.email?.split('@')[0]}` : 'Menu'}
-                                </span>
-                                <button onClick={() => setIsMenuOpen(false)} className="p-1.5 text-white hover:text-accent transition-colors bg-white/10 rounded-full">
-                                    <X className="h-4 w-4" />
-                                </button>
-                            </div>
-                            
-                            <div className="flex-1 overflow-y-auto py-4 px-4 space-y-1">
+                            {/* Menu Items */}
+                            <div className="flex-1 overflow-y-auto py-1 px-1.5 space-y-0.5">
                                 {[
                                     { name: 'Home', href: '/', icon: Home },
                                     { name: 'Shop', href: '/shop', icon: Store },
@@ -310,62 +303,71 @@ export function Navbar() {
                                 ].map((link, idx) => (
                                     <motion.div
                                         key={link.name}
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.05 + idx * 0.03 }}
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ delay: idx * 0.02 }}
                                     >
                                         <Link
                                             href={link.href}
-                                            className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/5 text-base font-serif text-emerald-50 hover:text-accent transition-all duration-300 group"
+                                            className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/5 transition-all duration-300 group"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
-                                            <link.icon className="h-4 w-4 text-emerald-50/50 group-hover:text-accent transition-colors duration-300" />
-                                            <span className="font-light tracking-wide">{link.name}</span>
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
+                                                    <link.icon className="h-2.5 w-2.5 text-accent/80 group-hover:text-accent" />
+                                                </div>
+                                                <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-white tracking-wide">
+                                                    {link.name}
+                                                </span>
+                                            </div>
+                                            <ChevronRight className="h-2.5 w-2.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
                                         </Link>
                                     </motion.div>
                                 ))}
 
-                                <div className="pt-4 border-t border-white/10 mt-4 space-y-1">
+                                <div className="mt-1 pt-1 border-t border-white/10">
                                     {user ? (
-                                        <>
-                                            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
-                                                <Link
-                                                    href="/orders"
-                                                    className="flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-white/5 text-base font-serif text-emerald-50 hover:text-accent transition-all duration-300 group"
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                >
-                                                    <User className="h-4 w-4 text-emerald-50/50 group-hover:text-accent transition-colors duration-300" />
-                                                    <span className="font-light tracking-wide">Profile</span>
-                                                </Link>
-                                            </motion.div>
-                                            <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.25 }}>
-                                                <button
-                                                    onClick={() => {
-                                                        handleLogout()
-                                                        setIsMenuOpen(false)
-                                                    }}
-                                                    className="w-full text-left flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-red-500/10 text-base font-serif text-emerald-50 hover:text-red-400 transition-all duration-300 group"
-                                                >
-                                                    <LogOut className="h-4 w-4 text-emerald-50/50 group-hover:text-red-400 transition-colors duration-300" />
-                                                    <span className="font-light tracking-wide">Logout</span>
-                                                </button>
-                                            </motion.div>
-                                        </>
-                                    ) : (
-                                        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+                                        <div className="space-y-0.5">
                                             <Link
-                                                href="/login"
-                                                className="flex items-center justify-center gap-2 p-2.5 rounded-lg bg-accent/10 hover:bg-accent border border-accent/30 text-accent hover:text-emerald-950 text-sm font-serif uppercase tracking-widest transition-all duration-300 group mt-2 w-full"
+                                                href="/orders"
+                                                className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/5 transition-all duration-300 group"
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
-                                                <User className="h-4 w-4 group-hover:text-emerald-950 transition-colors" />
-                                                <span className="font-semibold">Sign In / Sign Up</span>
+                                                <div className="flex items-center gap-2.5">
+                                                    <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
+                                                        <User className="h-2.5 w-2.5 text-accent/80 group-hover:text-accent" />
+                                                    </div>
+                                                    <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-white tracking-wide">Profile</span>
+                                                </div>
+                                                <ChevronRight className="h-2.5 w-2.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
                                             </Link>
-                                        </motion.div>
+                                            <button
+                                                onClick={() => {
+                                                    handleLogout()
+                                                    setIsMenuOpen(false)
+                                                }}
+                                                className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-red-500/10 transition-all duration-300 group"
+                                            >
+                                                <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-red-500/10 group-hover:border-red-500/20 transition-all duration-300">
+                                                    <LogOut className="h-2.5 w-2.5 text-emerald-50/50 group-hover:text-red-400" />
+                                                </div>
+                                                <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-red-400 tracking-wide">Logout</span>
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <Link
+                                            href="/login"
+                                            className="flex items-center justify-center gap-2 p-2 rounded-full bg-transparent hover:bg-accent/5 border border-accent/40 text-accent hover:border-accent transition-all duration-300 group w-full my-1"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        >
+                                            <User className="h-2.5 w-2.5 group-hover:scale-110 transition-transform" />
+                                            <span className="font-serif font-bold tracking-[0.1em] text-[9px] uppercase">Sign In</span>
+                                        </Link>
                                     )}
                                 </div>
                             </div>
-                        </motion.div>                    </>
+                        </motion.div>
+                    </>
                 )}
             </AnimatePresence>
             

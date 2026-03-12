@@ -8,41 +8,16 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 
+import { useProductsStore } from '@/store/productsStore'
+
 export function FeaturedProducts() {
-    const [products, setProducts] = useState<Product[]>([])
-    const [loading, setLoading] = useState(true)
+    const { featuredProducts, loadingFeatured, fetchFeaturedProducts, subscribeToProducts } = useProductsStore()
 
     useEffect(() => {
         fetchFeaturedProducts()
-    }, [])
-
-    const fetchFeaturedProducts = async () => {
-        try {
-            const supabase = createClient()
-            const { data, error } = await supabase
-                .from('products')
-                .select(`
-                    *,
-                    product_images(image_url)
-                `)
-                .eq('is_featured', true)
-                .limit(4)
-
-            if (error) throw error
-
-            // Transform data to include images array
-            const productsWithImages = data?.map(product => ({
-                ...product,
-                images: product.product_images?.map((img: any) => img.image_url) || []
-            })) || []
-
-            setProducts(productsWithImages)
-        } catch (error) {
-            console.error('Error fetching featured products:', error)
-        } finally {
-            setLoading(false)
-        }
-    }
+        const unsubscribe = subscribeToProducts()
+        return () => unsubscribe()
+    }, [fetchFeaturedProducts, subscribeToProducts])
 
     const container = {
         hidden: { opacity: 0 },
@@ -59,7 +34,7 @@ export function FeaturedProducts() {
         show: { opacity: 1, y: 0, transition: { duration: 0.5 } }
     }
 
-    if (loading) {
+    if (loadingFeatured) {
         return (
             <section className="py-20 bg-emerald-50/5">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,7 +46,7 @@ export function FeaturedProducts() {
         )
     }
 
-    if (products.length === 0) {
+    if (featuredProducts.length === 0) {
         return null // Don't show section if no featured products
     }
 
@@ -102,7 +77,7 @@ export function FeaturedProducts() {
                     viewport={{ once: true, margin: "-100px" }}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
                 >
-                    {products.map((product) => (
+                    {featuredProducts.map((product) => (
                         <motion.div key={product.id} variants={item}>
                             <ProductCard product={product} />
                         </motion.div>

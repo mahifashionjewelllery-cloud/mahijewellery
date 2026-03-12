@@ -18,6 +18,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     address: 'City, State, India',
     about_text: 'Crafting timeless elegance in gold and silver.',
     logo_url: '/mahilogo.png',
+    gallery_images: []
 }
 
 export const useSiteSettingsStore = create<SiteSettingsState>((set, get) => ({
@@ -35,13 +36,17 @@ export const useSiteSettingsStore = create<SiteSettingsState>((set, get) => ({
 
             if (error) throw error
 
+            const newSettings = { ...DEFAULT_SETTINGS } as any
             if (data && data.length > 0) {
-                const newSettings = { ...DEFAULT_SETTINGS } as any
                 data.forEach((item: RawSiteSetting) => {
                     newSettings[item.key] = item.value
                 })
-                set({ settings: newSettings, error: null })
             }
+            // Ensure gallery_images is at least an empty array if not found
+            if (!newSettings.gallery_images) {
+                newSettings.gallery_images = []
+            }
+            set({ settings: newSettings, error: null })
         } catch (err: any) {
             console.error('Error fetching site settings:', err)
             set({ error: err.message })
@@ -51,12 +56,16 @@ export const useSiteSettingsStore = create<SiteSettingsState>((set, get) => ({
     },
 
     updateSetting: (key: string, value: any) => {
-        set((state) => ({
-            settings: {
+        set((state) => {
+            const updatedSettings = {
                 ...state.settings,
                 [key]: value
             }
-        }))
+            if (key === 'gallery_images' && !Array.isArray(value)) {
+                updatedSettings[key] = []
+            }
+            return { settings: updatedSettings }
+        })
     },
 
     subscribeToSettings: () => {
