@@ -81,7 +81,7 @@ export function ProductCard({ product, showRemoveFromWishlist }: ProductCardProp
     }
 
     return (
-        <div className="group relative bg-white rounded-[20px] overflow-hidden transition-all duration-500 border border-gray-100 hover:border-red-500/30 flex flex-col h-full shadow-md hover:shadow-xl">
+        <div className="group relative bg-[#001a14]/60 backdrop-blur-xl rounded-[20px] overflow-hidden transition-all duration-500 border border-white/10 hover:border-accent/40 flex flex-col h-full shadow-2xl hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             {/* Image Container */}
             <div className="p-2">
                 <Link href={`/product/${product.id}`} className="block relative aspect-[4/3] overflow-hidden rounded-[16px] bg-gray-50">
@@ -135,7 +135,7 @@ export function ProductCard({ product, showRemoveFromWishlist }: ProductCardProp
                 </div>
                 
                 <Link href={`/product/${product.id}`}>
-                    <h3 className="font-sans text-base text-gray-900 font-semibold mb-1 line-clamp-1 group-hover:text-red-500 transition-colors">
+                    <h3 className="font-sans text-base text-white font-semibold mb-1 line-clamp-1 group-hover:text-accent transition-colors">
                         {product.name}
                     </h3>
                 </Link>
@@ -143,9 +143,6 @@ export function ProductCard({ product, showRemoveFromWishlist }: ProductCardProp
                 <div className="flex items-center gap-2 mb-4">
                     <span className="text-xl font-bold text-accent">
                         {formatCurrency(priceDetails.total)}
-                    </span>
-                    <span className="text-sm text-gray-400 line-through">
-                        {formatCurrency(priceDetails.total * 1.2)}
                     </span>
                 </div>
 

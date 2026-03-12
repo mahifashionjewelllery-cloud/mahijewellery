@@ -11,16 +11,17 @@ import { cn } from '@/lib/utils'
 
 function ProductSkeleton() {
     return (
-        <div className="bg-white rounded-lg overflow-hidden shadow-sm border border-emerald-950/5 flex flex-col h-full animate-pulse">
-            <div className="aspect-square bg-gray-200" />
-            <div className="p-4 sm:p-5 flex flex-col flex-grow">
-                <div className="h-3 bg-gray-200 rounded w-1/4 mb-4" />
-                <div className="h-5 bg-gray-200 rounded w-3/4 mb-3" />
-                <div className="h-4 bg-gray-200 rounded w-full mb-2" />
-                <div className="h-4 bg-gray-200 rounded w-5/6 mb-5" />
-                <div className="mt-auto pt-4 border-t border-emerald-900/5 flex justify-between items-center">
-                    <div className="h-6 bg-gray-200 rounded w-1/3" />
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gray-200 rounded-full" />
+        <div className="bg-[#001a14]/60 backdrop-blur-md rounded-[20px] overflow-hidden shadow-2xl border border-white/10 flex flex-col h-full animate-pulse">
+            <div className="p-2">
+                <div className="aspect-[4/3] bg-white/5 rounded-[16px]" />
+            </div>
+            <div className="px-4 pb-4 pt-2 flex flex-col flex-grow">
+                <div className="h-3 bg-white/10 rounded w-1/4 mb-4" />
+                <div className="h-5 bg-white/10 rounded w-3/4 mb-3" />
+                <div className="h-4 bg-white/10 rounded w-full mb-8" />
+                <div className="mt-auto flex gap-2">
+                    <div className="h-11 bg-white/10 rounded-xl flex-grow" />
+                    <div className="h-11 bg-white/10 rounded-xl w-16" />
                 </div>
             </div>
         </div>

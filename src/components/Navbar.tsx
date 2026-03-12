@@ -290,7 +290,7 @@ export function Navbar() {
                             exit={{ opacity: 0, scale: 0.95, y: -5 }}
                             transition={{ duration: 0.15, ease: "easeOut" }}
                             style={{ originX: 1, originY: 0 }}
-                            className="fixed top-20 right-4 w-48 bg-[#001a14]/98 backdrop-blur-md border border-accent/20 shadow-2xl z-[60] lg:hidden flex flex-col rounded-xl overflow-hidden will-change-[transform,opacity]"
+                            className="fixed top-20 right-4 w-60 bg-[#001a14]/98 backdrop-blur-md border border-accent/20 shadow-2xl z-[60] lg:hidden flex flex-col rounded-xl overflow-hidden will-change-[transform,opacity]"
                         >
                             {/* Menu Items */}
                             <div className="flex-1 overflow-y-auto py-1 px-1.5 space-y-0.5">
@@ -309,59 +309,59 @@ export function Navbar() {
                                     >
                                         <Link
                                             href={link.href}
-                                            className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/5 transition-all duration-300 group"
+                                            className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-white/5 transition-all duration-300 group"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
-                                            <div className="flex items-center gap-2.5">
-                                                <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
-                                                    <link.icon className="h-2.5 w-2.5 text-accent/80 group-hover:text-accent" />
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
+                                                    <link.icon className="h-4 w-4 text-accent/80 group-hover:text-accent" />
                                                 </div>
-                                                <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-white tracking-wide">
+                                                <span className="font-serif text-sm font-light text-emerald-100 group-hover:text-white tracking-wide">
                                                     {link.name}
                                                 </span>
                                             </div>
-                                            <ChevronRight className="h-2.5 w-2.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
+                                            <ChevronRight className="h-3.5 w-3.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
                                         </Link>
                                     </motion.div>
                                 ))}
 
                                 <div className="mt-1 pt-1 border-t border-white/10">
                                     {user ? (
-                                        <div className="space-y-0.5">
+                                        <div className="space-y-1">
                                             <Link
                                                 href="/orders"
-                                                className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-white/5 transition-all duration-300 group"
+                                                className="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-white/5 transition-all duration-300 group"
                                                 onClick={() => setIsMenuOpen(false)}
                                             >
-                                                <div className="flex items-center gap-2.5">
-                                                    <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
-                                                        <User className="h-2.5 w-2.5 text-accent/80 group-hover:text-accent" />
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/20 transition-all duration-300">
+                                                        <User className="h-4 w-4 text-accent/80 group-hover:text-accent" />
                                                     </div>
-                                                    <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-white tracking-wide">Profile</span>
+                                                    <span className="font-serif text-sm font-light text-emerald-100 group-hover:text-white tracking-wide">Profile</span>
                                                 </div>
-                                                <ChevronRight className="h-2.5 w-2.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
+                                                <ChevronRight className="h-3.5 w-3.5 text-accent/40 group-hover:text-accent/80 transition-all duration-300" />
                                             </Link>
                                             <button
                                                 onClick={() => {
                                                     handleLogout()
                                                     setIsMenuOpen(false)
                                                 }}
-                                                className="w-full flex items-center gap-2.5 py-1.5 px-2 rounded-lg hover:bg-red-500/10 transition-all duration-300 group"
+                                                className="w-full flex items-center gap-3 py-2.5 px-3 rounded-lg hover:bg-red-500/10 transition-all duration-300 group"
                                             >
-                                                <div className="w-6 h-6 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-red-500/10 group-hover:border-red-500/20 transition-all duration-300">
-                                                    <LogOut className="h-2.5 w-2.5 text-emerald-50/50 group-hover:text-red-400" />
+                                                <div className="w-8 h-8 rounded-full bg-white/5 border border-white/5 flex items-center justify-center group-hover:bg-red-500/10 group-hover:border-red-500/20 transition-all duration-300">
+                                                    <LogOut className="h-4 w-4 text-emerald-50/50 group-hover:text-red-400" />
                                                 </div>
-                                                <span className="font-serif text-[11px] font-light text-emerald-100 group-hover:text-red-400 tracking-wide">Logout</span>
+                                                <span className="font-serif text-sm font-light text-emerald-100 group-hover:text-red-400 tracking-wide">Logout</span>
                                             </button>
                                         </div>
                                     ) : (
                                         <Link
                                             href="/login"
-                                            className="flex items-center justify-center gap-2 p-2 rounded-full bg-transparent hover:bg-accent/5 border border-accent/40 text-accent hover:border-accent transition-all duration-300 group w-full my-1"
+                                            className="flex items-center justify-center gap-3 p-3 rounded-full bg-transparent hover:bg-accent/5 border border-accent/40 text-accent hover:border-accent transition-all duration-300 group w-full my-2"
                                             onClick={() => setIsMenuOpen(false)}
                                         >
-                                            <User className="h-2.5 w-2.5 group-hover:scale-110 transition-transform" />
-                                            <span className="font-serif font-bold tracking-[0.1em] text-[9px] uppercase">Sign In</span>
+                                            <User className="h-4 w-4 group-hover:scale-110 transition-transform" />
+                                            <span className="font-serif font-bold tracking-[0.1em] text-[11px] uppercase">Sign In</span>
                                         </Link>
                                     )}
                                 </div>
