@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { createServerAnonClient } from '@/lib/supabase-server'
+import { revalidatePath } from 'next/cache'
+
+export async function GET() {
+    try {
+        const supabase = await createServerAnonClient()
+
+        const { data, error } = await supabase
+            .from('site_settings')
+            .select('value')
+            .eq('key', 'gallery_images')
+            .single()
+
+        if (error && error.code !== 'PGRST116') {
+            throw error
+        }
+
+        return NextResponse.json({ images: data?.value || [] })
+    } catch (error: any) {
+        console.error('Error fetching gallery:', error)
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+}
+
+export async function POST(request: NextRequest) {
+    try {
+        const supabase = await createServerAnonClient()
+
+        // Check if user is admin
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (!user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single()
+
+        if (profile?.role !== 'admin') {
+            return NextResponse.json({ error: 'Forbidden - Admin only' }, { status: 403 })
+        }
+
+        // Now save the images
+        const { images } = await request.json()
+
+        const { error } = await supabase
+            .from('site_settings')
+            .upsert({
+                key: 'gallery_images',
+                value: images
+            })
+
+        if (error) throw error
+
+        revalidatePath('/')
+        revalidatePath('/gallery')
+
+        return NextResponse.json({ success: true })
+    } catch (error: any) {
+        console.error('Error saving gallery:', error)
+        return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+}
