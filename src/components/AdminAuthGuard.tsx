@@ -39,22 +39,41 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
                     return
                 }
 
-                // 3. Check if user has admin role in profiles table
-                const { data: profile, error: profileError } = await supabase
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', user.id)
-                    .single()
+                // 3. Check if user has admin role in profiles table with retries
+                let profile = null
+                let profileError = null
+                let retryCount = 0
+                const maxRetries = 2
 
-                console.log('Admin Profile Check:', { userId: user.id, profile, profileError })
+                while (retryCount <= maxRetries) {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single()
+                    
+                    profile = data
+                    profileError = error
 
-                if (profile?.role === 'admin') {
-                    if (mounted) {
-                        setIsAuthorized(true)
-                        setIsLoading(false)
+                    if (profile?.role === 'admin') {
+                        console.log('Admin Access granted via profile role')
+                        if (mounted) {
+                            setIsAuthorized(true)
+                            setIsLoading(false)
+                        }
+                        return
                     }
-                    return
+
+                    if (!profileError) break // Profile found but not admin
+
+                    console.warn(`Admin Profile Fetch Retry ${retryCount + 1}/${maxRetries}:`, { error: profileError })
+                    retryCount++
+                    if (retryCount <= maxRetries) {
+                        await new Promise(resolve => setTimeout(resolve, 500)) // 500ms delay
+                    }
                 }
+
+                console.log('Admin Profile Check Summary:', { userId: user.id, profile, profileError })
 
                 // If we reach here, user is NOT an admin
                 console.log('Redirecting to / - Not admin', { role: profile?.role })
