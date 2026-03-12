@@ -6,12 +6,14 @@ import Link from 'next/link'
 import { Search, Mail, Phone, Calendar, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import Image from 'next/image'
+import { useToast } from '@/context/ToastContext'
 
 // Mock Customer Data
 const CustomersPage = () => {
     const [customers, setCustomers] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const { showToast } = useToast()
 
     useEffect(() => {
         fetchCustomers()
@@ -42,9 +44,10 @@ const CustomersPage = () => {
             
             // Remove from local state
             setCustomers(prev => prev.filter(c => c.id !== id))
-        } catch (error) {
+            showToast('Customer deleted successfully', 'success')
+        } catch (error: any) {
             console.error('Error deleting user:', error)
-            alert('Failed to delete user. Check console for details.')
+            showToast('Failed to delete user: ' + error.message, 'error')
         }
     }
 

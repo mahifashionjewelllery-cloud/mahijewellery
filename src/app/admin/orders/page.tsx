@@ -5,11 +5,13 @@ import { useState, useEffect } from 'react'
 import { Order } from '@/types'
 import { formatCurrency } from '@/lib/utils'
 import { Loader2, Trash2 } from 'lucide-react'
+import { useToast } from '@/context/ToastContext'
 
 export default function AdminOrdersPage() {
     const [orders, setOrders] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
     const [updating, setUpdating] = useState<string | null>(null)
+    const { showToast } = useToast()
 
     useEffect(() => {
         fetchOrders()
@@ -39,9 +41,10 @@ export default function AdminOrdersPage() {
             if (!res.ok) throw new Error('Failed to delete order')
             
             setOrders(prev => prev.filter(o => o.id !== orderId))
-        } catch (error) {
+            showToast('Order deleted successfully', 'success')
+        } catch (error: any) {
             console.error('Error deleting order:', error)
-            alert('Failed to delete order. Check console for details.')
+            showToast('Failed to delete order: ' + error.message, 'error')
         }
     }
 
@@ -61,9 +64,10 @@ export default function AdminOrdersPage() {
             }
 
             setOrders(orders.map(o => o.id === orderId ? { ...o, order_status: newStatus } : o))
+            showToast('Order status updated', 'success')
         } catch (error: any) {
             console.error('Error updating status:', error)
-            alert('Failed to update status: ' + error.message)
+            showToast('Failed to update status: ' + error.message, 'error')
         } finally {
             setUpdating(null)
         }
@@ -114,6 +118,20 @@ export default function AdminOrdersPage() {
                                         <div className="font-medium text-gray-900">{order.customer_name}</div>
                                         <div className="text-xs">{order.customer_email}</div>
                                         <div className="text-xs text-gray-400 mt-0.5">{order.shipping_address}</div>
+                                        
+                                        {/* Order Items Section */}
+                                        <div className="mt-3 pt-2 border-t border-gray-100">
+                                            <div className="text-[10px] font-bold text-gray-400 uppercase mb-1">Products:</div>
+                                            <ul className="space-y-1">
+                                                {order.items?.map((item: any) => (
+                                                    <li key={item.id} className="text-xs flex items-start gap-1">
+                                                        <span className="font-medium text-gray-700">{item.product?.name || 'Unknown Product'}</span>
+                                                        <span className="text-gray-400">({item.product?.weight}g {item.product?.purity})</span>
+                                                        <span className="text-gray-900 ml-auto font-semibold">x{item.quantity}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         {formatCurrency(order.total_amount)}

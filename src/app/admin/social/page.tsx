@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Trash2, Plus, GripVertical, Facebook, Instagram, Twitter, Linkedin, Youtube, Mail, Globe } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/context/ToastContext'
 
 const WhatsappIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -45,6 +46,7 @@ export default function SocialMediaPage() {
         url: '',
         icon: 'globe'
     })
+    const { showToast } = useToast()
 
     useEffect(() => {
         fetchSocialLinks()
@@ -78,8 +80,9 @@ export default function SocialMediaPage() {
 
         if (error) {
             console.error('Error adding link:', error)
-            alert('Failed to add link')
+            showToast('Failed to add link', 'error')
         } else {
+            showToast('Social link added successfully', 'success')
             setNewLink({ platform: '', url: '', icon: 'globe' })
             setIsAdding(false)
             fetchSocialLinks()
@@ -97,8 +100,9 @@ export default function SocialMediaPage() {
 
         if (error) {
             console.error('Error deleting link:', error)
-            alert('Failed to delete link')
+            showToast('Failed to delete link', 'error')
         } else {
+            showToast('Social link deleted', 'success')
             fetchSocialLinks()
         }
     }

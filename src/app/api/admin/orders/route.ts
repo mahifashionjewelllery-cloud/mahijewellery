@@ -33,9 +33,19 @@ export async function GET() {
         // But for now, let's keep simple.
         const { data: { users }, error: usersError } = await supabaseAdmin.auth.admin.listUsers({ perPage: 1000 })
 
+        // Fetch all order items for these orders, joining with products
+        const orderIds = orders.map(o => o.id)
+        const { data: orderItems, error: itemsError } = await supabaseAdmin
+            .from('order_items')
+            .select('*, products(*)')
+            .in('order_id', orderIds)
+
+        if (itemsError) throw itemsError
+
         const enrichedOrders = orders.map(order => {
             const profile = profiles.find(p => p.id === order.user_id)
             const user = users?.find(u => u.id === order.user_id)
+            const items = orderItems?.filter(item => item.order_id === order.id) || []
 
             // Extract name from shipping address (stored on first line) if profile name is missing
             const shippingName = order.shipping_address ? order.shipping_address.split('\n')[0] : null
@@ -45,7 +55,11 @@ export async function GET() {
                 ...order,
                 customer_name: finalName,
                 customer_email: user?.email || 'N/A',
-                customer_phone: profile?.phone || 'N/A'
+                customer_phone: profile?.phone || 'N/A',
+                items: items.map(item => ({
+                    ...item,
+                    product: item.products
+                }))
             }
         })
 

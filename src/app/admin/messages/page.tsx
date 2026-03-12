@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase'
 import { Search, Mail, Phone, Calendar, MessageSquare, Clock, Trash2 } from 'lucide-react'
 import { Input } from '@/components/ui/Input'
 import { format } from 'date-fns'
+import { useToast } from '@/context/ToastContext'
 
 interface Message {
     id: string
@@ -21,6 +22,7 @@ export default function MessagesPage() {
     const [messages, setMessages] = useState<Message[]>([])
     const [loading, setLoading] = useState(true)
     const [searchTerm, setSearchTerm] = useState('')
+    const { showToast } = useToast()
 
     useEffect(() => {
         fetchMessages()
@@ -50,9 +52,10 @@ export default function MessagesPage() {
             if (!res.ok) throw new Error('Failed to delete message')
             
             setMessages(prev => prev.filter(m => m.id !== msgId))
-        } catch (error) {
+            showToast('Message deleted successfully', 'success')
+        } catch (error: any) {
             console.error('Error deleting message:', error)
-            alert('Failed to delete message. Check console for details.')
+            showToast('Failed to delete message: ' + error.message, 'error')
         }
     }
 
